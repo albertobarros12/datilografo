@@ -9,11 +9,44 @@ function storageGet(key) {
 function storageSet(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
+function storageRemove(key) {
+  try { localStorage.removeItem(key); } catch {}
+}
+
+// ═══════════════════════════════════════════════════════
+// PERFIS (dinamicos)
+// ═══════════════════════════════════════════════════════
+// Perfis originais, usados para semear a lista na primeira carga
+// (preserva o progresso ja salvo de Felipe e Maria).
+const DEFAULT_PROFILES = ["Felipe", "Maria"];
+const PROFILES_KEY = "profiles:list";
+
+function getProfiles() {
+  const saved = storageGet(PROFILES_KEY);
+  if (Array.isArray(saved)) return saved;
+  storageSet(PROFILES_KEY, DEFAULT_PROFILES);
+  return DEFAULT_PROFILES;
+}
+function addProfile(name) {
+  const clean = name.trim();
+  const list = getProfiles();
+  if (!clean) return list;
+  // evita duplicados (case-insensitive)
+  if (list.some(n => n.toLowerCase() === clean.toLowerCase())) return list;
+  const next = [...list, clean];
+  storageSet(PROFILES_KEY, next);
+  return next;
+}
+function removeProfile(name) {
+  const next = getProfiles().filter(n => n !== name);
+  storageSet(PROFILES_KEY, next);
+  storageRemove(`profile:${name.toLowerCase()}`);
+  return next;
+}
 
 // ═══════════════════════════════════════════════════════
 // DADOS
 // ═══════════════════════════════════════════════════════
-const PROFILES = ["Felipe", "Maria"];
 
 const LESSONS = [
   { id:1,  title:"LICAO 01", subtitle:"F e J: posicao inicial",           keyboard:true,  description:"Indicador ESQUERDO no F, DIREITO no J.\nSinta os relevos — eles sao sua ancora!", exercises:["fff jjj fff jjj","fj jf fj jf fj","ffj jjf fj fjfj jfjf"] },
@@ -249,13 +282,54 @@ function AchievementBanner({ ids }) {
 // ═══════════════════════════════════════════════════════
 // PROFILE SCREEN
 // ═══════════════════════════════════════════════════════
+// Avatar deterministico a partir do nome (mantem ♂/♀ para os perfis originais).
+const AVATARS = ["★","☺","♦","♣","♠","♥","✪","◆","☻","✦"];
+function avatarFor(name) {
+  if (name==="Felipe") return "♂";
+  if (name==="Maria")  return "♀";
+  let h=0;
+  for (let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+  return AVATARS[h%AVATARS.length];
+}
+
 function ProfileScreen({ onSelect }) {
+  const [profiles, setProfiles] = useState([]);
   const [data, setData] = useState({});
-  useEffect(() => {
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [error, setError] = useState("");
+  const inputRef = useRef(null);
+
+  const refresh = (list) => {
     const d = {};
-    for (const n of PROFILES) d[n] = storageGet(`profile:${n.toLowerCase()}`);
+    for (const n of list) d[n] = storageGet(`profile:${n.toLowerCase()}`);
     setData(d);
+  };
+
+  useEffect(() => {
+    const list = getProfiles();
+    setProfiles(list);
+    refresh(list);
   }, []);
+
+  useEffect(() => { if (adding) inputRef.current?.focus(); }, [adding]);
+
+  const submitNew = () => {
+    const clean = newName.trim();
+    if (!clean) { setError("Digite um nome."); return; }
+    if (profiles.some(n => n.toLowerCase() === clean.toLowerCase())) {
+      setError("Ja existe um perfil com esse nome."); return;
+    }
+    const list = addProfile(clean);
+    setProfiles(list); refresh(list);
+    setNewName(""); setError(""); setAdding(false);
+  };
+
+  const handleRemove = (name) => {
+    if (!window.confirm(`Apagar o perfil "${name}" e todo o seu progresso? Esta acao nao pode ser desfeita.`)) return;
+    const list = removeProfile(name);
+    setProfiles(list); refresh(list);
+  };
 
   return (
     <div style={{ textAlign:"center", paddingTop:28 }}>
@@ -274,31 +348,61 @@ function ProfileScreen({ onSelect }) {
         ║   SELECIONE O PERFIL:    ║<br/>
         ╚══════════════════════════╝
       </div>
-      <div style={{ display:"flex", gap:48, justifyContent:"center", flexWrap:"wrap" }}>
-        {PROFILES.map(name => {
+      <div style={{ display:"flex", gap:32, justifyContent:"center", flexWrap:"wrap", alignItems:"stretch" }}>
+        {profiles.map(name => {
           const p = data[name];
           const done = p ? Object.values(p.lessons||{}).filter(l=>l.status==="completed").length : 0;
-          return <ProfileCard key={name} name={name} done={done} streak={p?.streak?.count||0} ach={p?.achievements?.length||0} onClick={()=>onSelect(name)} />;
+          return <ProfileCard key={name} name={name} done={done} streak={p?.streak?.count||0} ach={p?.achievements?.length||0} onClick={()=>onSelect(name)} onRemove={()=>handleRemove(name)} />;
         })}
+
+        {adding ? (
+          <div style={{ border:`2px dashed ${C.yellow}`, padding:"22px 24px", minWidth:160, display:"flex", flexDirection:"column", justifyContent:"center", gap:10 }}>
+            <div style={{ fontSize:14, color:C.yellow, letterSpacing:2 }}>NOVO PERFIL</div>
+            <input ref={inputRef} value={newName} maxLength={14}
+              onChange={e=>{setNewName(e.target.value);setError("");}}
+              onKeyDown={e=>{ if(e.key==="Enter") submitNew(); if(e.key==="Escape"){setAdding(false);setNewName("");setError("");} }}
+              placeholder="Nome..."
+              style={{ background:"transparent", border:`1px solid ${C.cyan}`, color:C.yellow, fontFamily:"inherit", fontSize:14, padding:"6px 8px", outline:"none", textAlign:"center", width:"100%" }}/>
+            {error && <div style={{ color:C.red, fontSize:10 }}>{error}</div>}
+            <div style={{ display:"flex", gap:8, justifyContent:"center" }}>
+              <div onClick={submitNew} style={{ border:`1px solid ${C.green}`, color:C.green, padding:"4px 12px", cursor:"pointer", fontSize:12 }}>[ CRIAR ]</div>
+              <div onClick={()=>{setAdding(false);setNewName("");setError("");}} style={{ border:`1px solid #555`, color:C.gray, padding:"4px 12px", cursor:"pointer", fontSize:12 }}>[ X ]</div>
+            </div>
+          </div>
+        ) : (
+          <div onClick={()=>setAdding(true)}
+            style={{ border:`2px dashed ${C.text}`, padding:"22px 40px", cursor:"pointer", color:C.gray, minWidth:160, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}
+            onMouseEnter={e=>{e.currentTarget.style.color=C.yellow;e.currentTarget.style.borderColor=C.yellow;}}
+            onMouseLeave={e=>{e.currentTarget.style.color=C.gray;e.currentTarget.style.borderColor=C.text;}}>
+            <div style={{ fontSize:48, marginBottom:6, lineHeight:1 }}>+</div>
+            <div style={{ fontSize:14, letterSpacing:2 }}>NOVO PERFIL</div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function ProfileCard({ name, done, streak, ach, onClick }) {
+function ProfileCard({ name, done, streak, ach, onClick, onRemove }) {
   const [h,setH] = useState(false);
   const pct = Math.round((done/LESSONS.length)*100);
   return (
-    <div onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
-      style={{ border:`2px solid ${h?C.yellow:C.text}`, padding:"22px 40px", cursor:"pointer", color:h?C.yellow:C.white, minWidth:160 }}>
-      <div style={{ fontSize:48, marginBottom:6, lineHeight:1 }}>{name==="Felipe"?"♂":"♀"}</div>
-      <div style={{ fontSize:16, fontWeight:"bold", letterSpacing:3, marginBottom:10 }}>{name.toUpperCase()}</div>
-      <div style={{ fontSize:12, color:C.green, marginBottom:4 }}>{done}/{LESSONS.length} LICOES</div>
-      <div style={{ height:4, background:"#223", width:"100%", marginBottom:6 }}>
-        <div style={{ height:"100%", background:C.green, width:`${pct}%` }} />
+    <div onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+      style={{ position:"relative", border:`2px solid ${h?C.yellow:C.text}`, padding:"22px 40px", cursor:"pointer", color:h?C.yellow:C.white, minWidth:160 }}>
+      {onRemove && (
+        <div onClick={e=>{e.stopPropagation();onRemove();}} title={`Apagar ${name}`}
+          style={{ position:"absolute", top:4, right:6, color:h?C.red:"transparent", fontSize:12, cursor:"pointer" }}>✕</div>
+      )}
+      <div onClick={onClick}>
+        <div style={{ fontSize:48, marginBottom:6, lineHeight:1 }}>{avatarFor(name)}</div>
+        <div style={{ fontSize:16, fontWeight:"bold", letterSpacing:3, marginBottom:10 }}>{name.toUpperCase()}</div>
+        <div style={{ fontSize:12, color:C.green, marginBottom:4 }}>{done}/{LESSONS.length} LICOES</div>
+        <div style={{ height:4, background:"#223", width:"100%", marginBottom:6 }}>
+          <div style={{ height:"100%", background:C.green, width:`${pct}%` }} />
+        </div>
+        {streak>0 && <div style={{ fontSize:11, color:"#FF9900" }}>🔥 {streak} dias seguidos</div>}
+        {ach>0 && <div style={{ fontSize:11, color:C.yellow }}>🏆 {ach} conquistas</div>}
       </div>
-      {streak>0 && <div style={{ fontSize:11, color:"#FF9900" }}>🔥 {streak} dias seguidos</div>}
-      {ach>0 && <div style={{ fontSize:11, color:C.yellow }}>🏆 {ach} conquistas</div>}
     </div>
   );
 }
