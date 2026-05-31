@@ -260,12 +260,12 @@ function ProfileScreen({ onSelect }) {
   return (
     <div style={{ textAlign:"center", paddingTop:28 }}>
       <pre style={{ color:C.cyan, fontSize:12, lineHeight:1.25, margin:"0 0 4px", display:"inline-block", textAlign:"left" }}>{
-`  ██████╗ ██╗████████╗ █████╗ ██╗      ██████╗  ██████╗
-  ██╔══██╗██║╚══██╔══╝██╔══██╗██║     ██╔═══██╗██╔════╝
-  ██║  ██║██║   ██║   ███████║██║     ██║   ██║██║  ███╗
-  ██║  ██║██║   ██║   ██╔══██║██║     ██║   ██║██║   ██║
-  ██████╔╝██║   ██║   ██║  ██║███████╗╚██████╔╝╚██████╔╝
-  ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝`
+`  ██████╗  █████╗ ████████╗██╗██╗      ██████╗  ██████╗
+  ██╔══██╗██╔══██╗╚══██╔══╝██║██║     ██╔═══██╗██╔════╝
+  ██║  ██║███████║   ██║   ██║██║     ██║   ██║██║  ███╗
+  ██║  ██║██╔══██║   ██║   ██║██║     ██║   ██║██║   ██║
+  ██████╔╝██║  ██║   ██║   ██║███████╗╚██████╔╝╚██████╔╝
+  ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝╚══════╝ ╚═════╝  ╚═════╝`
       }</pre>
       <div style={{ color:C.yellow, fontSize:13, letterSpacing:3, marginBottom:2 }}>TURBO v2.0</div>
       <div style={{ color:C.gray, fontSize:11, marginBottom:30 }}>Aprenda a digitar com estilo retro!</div>
@@ -1074,7 +1074,7 @@ export default function App() {
       `}</style>
       <div style={{ background:C.bg, color:C.text, fontFamily:'"Courier New","Lucida Console",monospace', minHeight:"100vh", display:"flex", flexDirection:"column", fontSize:14, zoom:1.25 }}>
         <div style={{ ...C.bar, padding:"3px 14px", fontWeight:"bold", fontSize:13, display:"flex", justifyContent:"space-between", flexShrink:0 }}>
-          <span>■ DITALOGRAFO TURBO v2.0</span>
+          <span>■ DATILOGRAFO TURBO v2.0</span>
           <span>{profileName?`Aluno: ${profileName.toUpperCase()}`:""}</span>
         </div>
         <div style={{ flex:1, padding:"12px 20px", overflowY:"auto" }}>

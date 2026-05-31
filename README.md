@@ -1,4 +1,4 @@
-# ⌨️ Ditalografo Turbo
+# ⌨️ Datilografo Turbo
 
 App de digitação com estética DOS para aprender a digitar de forma divertida.
 Visual inspirado no MS-DOS/Windows 3.1: fundo azul, fonte monospace, bordas ASCII.
