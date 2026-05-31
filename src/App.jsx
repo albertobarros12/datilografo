@@ -1070,12 +1070,13 @@ export default function App() {
         ::-webkit-scrollbar-thumb{background:#334}
         body{margin:0}
       `}</style>
-      <div style={{ background:C.bg, color:C.text, fontFamily:'"Courier New","Lucida Console",monospace', minHeight:"100vh", display:"flex", flexDirection:"column", fontSize:14 }}>
+      <div style={{ background:C.bg, color:C.text, fontFamily:'"Courier New","Lucida Console",monospace', minHeight:"100vh", display:"flex", flexDirection:"column", fontSize:14, zoom:1.25 }}>
         <div style={{ ...C.bar, padding:"3px 14px", fontWeight:"bold", fontSize:13, display:"flex", justifyContent:"space-between", flexShrink:0 }}>
           <span>■ DITALOGRAFO TURBO v2.0</span>
           <span>{profileName?`Aluno: ${profileName.toUpperCase()}`:""}</span>
         </div>
         <div style={{ flex:1, padding:"12px 20px", overflowY:"auto" }}>
+          <div style={{ maxWidth:920, margin:"0 auto" }}>
           {screen==="profile"&&<ProfileScreen onSelect={n=>{setProfileName(n);setScreen("main");}}/>}
           {screen==="main"&&(
             <div>
@@ -1088,6 +1089,7 @@ export default function App() {
               {activeTab==="conquistas"&&<ConquistasScreen profileName={profileName}/>}
             </div>
           )}
+          </div>
         </div>
         <div style={{ ...C.bar, padding:"2px 14px", fontSize:11, display:"flex", justifyContent:"space-between", flexShrink:0 }}>
           <span>v2.0 | ESC=Voltar</span>
