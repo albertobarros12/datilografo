@@ -727,8 +727,15 @@ function CronometroScreen({ profileName }) {
 // ═══════════════════════════════════════════════════════
 // CHUVA DE PALAVRAS
 // ═══════════════════════════════════════════════════════
+const DIFICULDADES = {
+  facil:  { label:"FACIL",  speedInit:0.2, speedMax:2.0, spawnMs:2800 },
+  normal: { label:"NORMAL", speedInit:0.4, speedMax:3.5, spawnMs:2200 },
+  dificil:{ label:"DIFICIL",speedInit:0.7, speedMax:5.0, spawnMs:1500 },
+};
+
 function ChuvaScreen({ profileName }) {
   const [theme, setTheme] = useState("geral");
+  const [dificuldade, setDificuldade] = useState("normal");
   const [phase, setPhase] = useState("ready");
   const [fallingWords, setFallingWords] = useState([]);
   const [typed, setTyped] = useState("");
@@ -739,7 +746,8 @@ function ChuvaScreen({ profileName }) {
   const [newAch, setNewAch] = useState([]);
 
   const rafRef=useRef(null), fallingRef=useRef([]), scoreRef=useRef(0), livesRef=useRef(3);
-  const speedRef=useRef(0.4), poolRef=useRef([]), wIdRef=useRef(0), nextSpawnRef=useRef(0);
+  const speedRef=useRef(0.4), speedMaxRef=useRef(3.5), spawnMsRef=useRef(2200);
+  const poolRef=useRef([]), wIdRef=useRef(0), nextSpawnRef=useRef(0);
   const inputRef=useRef(null), containerRef=useRef(null), phaseRef=useRef("ready"), typedRef=useRef("");
 
   phaseRef.current=phase;
@@ -761,8 +769,10 @@ function ChuvaScreen({ profileName }) {
   },[profileName]);
 
   const startGame = ()=>{
+    const diff=DIFICULDADES[dificuldade];
     const pool=[...WORD_LISTS[theme],...WORD_LISTS[theme],...WORD_LISTS[theme]].sort(()=>Math.random()-0.5);
-    fallingRef.current=[]; scoreRef.current=0; livesRef.current=3; speedRef.current=0.4;
+    fallingRef.current=[]; scoreRef.current=0; livesRef.current=3;
+    speedRef.current=diff.speedInit; speedMaxRef.current=diff.speedMax; spawnMsRef.current=diff.spawnMs;
     wIdRef.current=0; nextSpawnRef.current=Date.now()+1200; poolRef.current=pool; typedRef.current="";
     setFallingWords([]); setScore(0); setLives(3); setTyped(""); setPhase("running"); setNewAch([]);
     setTimeout(()=>inputRef.current?.focus(),50);
@@ -779,7 +789,7 @@ function ChuvaScreen({ profileName }) {
         const word=poolRef.current[wIdRef.current%poolRef.current.length];
         wIdRef.current++;
         fallingRef.current=[...fallingRef.current,{id:wIdRef.current,word,x:8+Math.random()*76,y:0}];
-        nextSpawnRef.current=now+Math.max(700,2200-scoreRef.current*18);
+        nextSpawnRef.current=now+Math.max(500,spawnMsRef.current-scoreRef.current*18);
       }
 
       let lost=false;
@@ -808,7 +818,7 @@ function ChuvaScreen({ profileName }) {
       const idx=fallingRef.current.findIndex(w=>w.word===attempt);
       if(idx!==-1){
         fallingRef.current=fallingRef.current.filter((_,i)=>i!==idx);
-        scoreRef.current++; speedRef.current=Math.min(3.5,0.4+scoreRef.current*0.04);
+        scoreRef.current++; speedRef.current=Math.min(speedMaxRef.current,speedRef.current+0.04);
         setScore(scoreRef.current); playSound("done");
       } else { playSound("error"); }
       typedRef.current=""; setTyped(""); e.target.value="";
@@ -825,6 +835,20 @@ function ChuvaScreen({ profileName }) {
               {Object.keys(WORD_LISTS).map(t=>(
                 <div key={t} onClick={()=>setTheme(t)} style={{ border:`1px solid ${theme===t?C.yellow:C.text}`, padding:"6px 18px", cursor:"pointer", color:theme===t?C.yellow:C.text }}>{t.toUpperCase()}</div>
               ))}
+            </div>
+          </Box>
+          <Box title="DIFICULDADE">
+            <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
+              {Object.entries(DIFICULDADES).map(([k,d])=>(
+                <div key={k} onClick={()=>setDificuldade(k)} style={{ border:`1px solid ${dificuldade===k?C.yellow:C.text}`, padding:"6px 18px", cursor:"pointer", color:dificuldade===k?C.yellow:C.text }}>
+                  {d.label}
+                </div>
+              ))}
+            </div>
+            <div style={{ color:C.gray, fontSize:11, marginTop:8 }}>
+              {dificuldade==="facil"  && "Velocidade inicial baixa · spawn a cada 2.8s"}
+              {dificuldade==="normal" && "Velocidade moderada · spawn a cada 2.2s (padrão)"}
+              {dificuldade==="dificil"&& "Velocidade alta · spawn a cada 1.5s 💀"}
             </div>
           </Box>
           <div style={{ color:C.gray, fontSize:12, margin:"16px 0" }}>
