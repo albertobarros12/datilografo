@@ -195,6 +195,13 @@ const THEMES = {
       red:"#FF5533", gray:"#9A6A1A", dark:"#3a2408",
       bar:{ background:"#FFB000", color:"#1A0D00" } },
   },
+  mocha: {
+    label:"CATPPUCCIN MOCHA",
+    colors:{ bg:"#1E1E2E", text:"#CDD6F4", white:"#FFFFFF",
+      yellow:"#F9E2AF", green:"#A6E3A1", cyan:"#89DCEB",
+      red:"#F38BA8", gray:"#6C7086", dark:"#313244",
+      bar:{ background:"#CBA6F7", color:"#1E1E2E" } },
+  },
 };
 const THEME_KEY = "settings:theme";
 function getThemeKey() {
