@@ -168,12 +168,47 @@ function playSound(type) {
   } catch(_) {}
 }
 
-const C = {
-  bg:"#000080", text:"#AAAAAA", white:"#FFFFFF",
-  yellow:"#FFFF55", green:"#55FF55", cyan:"#55FFFF",
-  red:"#FF5555", gray:"#777777", dark:"#334066",
-  bar:{ background:"#AAAAAA", color:"#000080" },
+// ═══════════════════════════════════════════════════════
+// TEMAS DE CORES
+// ═══════════════════════════════════════════════════════
+// C e um objeto mutavel: todos os componentes leem C.xxx em tempo de
+// render, entao trocar o tema = sobrescrever as chaves de C + re-render.
+const THEMES = {
+  azul: {
+    label:"AZUL DOS",
+    colors:{ bg:"#000080", text:"#AAAAAA", white:"#FFFFFF",
+      yellow:"#FFFF55", green:"#55FF55", cyan:"#55FFFF",
+      red:"#FF5555", gray:"#777777", dark:"#334066",
+      bar:{ background:"#AAAAAA", color:"#000080" } },
+  },
+  verde: {
+    label:"VERDE FOSFORO",
+    colors:{ bg:"#001400", text:"#33CC33", white:"#CCFFCC",
+      yellow:"#BFFF40", green:"#55FF55", cyan:"#40FFB0",
+      red:"#FF6655", gray:"#2E8B2E", dark:"#0d330d",
+      bar:{ background:"#33CC33", color:"#001400" } },
+  },
+  ambar: {
+    label:"AMBAR",
+    colors:{ bg:"#1A0D00", text:"#FFB000", white:"#FFE0B0",
+      yellow:"#FFD000", green:"#BFE000", cyan:"#FFC966",
+      red:"#FF5533", gray:"#9A6A1A", dark:"#3a2408",
+      bar:{ background:"#FFB000", color:"#1A0D00" } },
+  },
 };
+const THEME_KEY = "settings:theme";
+function getThemeKey() {
+  const t = storageGet(THEME_KEY);
+  return THEMES[t] ? t : "azul";
+}
+
+const C = { ...THEMES.azul.colors };
+function applyTheme(key) {
+  const t = THEMES[key] || THEMES.azul;
+  Object.assign(C, t.colors);
+  storageSet(THEME_KEY, key);
+}
+applyTheme(getThemeKey());
 
 // ═══════════════════════════════════════════════════════
 // TECLADO VISUAL
@@ -1160,10 +1195,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("lessons");
   const [lessonId, setLessonId] = useState(null);
   const [tick, setTick] = useState(0);
+  const [theme, setTheme] = useState(getThemeKey());
 
   useEffect(()=>{ const t=setInterval(()=>setTick(i=>i+1),30000); return()=>clearInterval(t); },[]);
   const time=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
 
+  const changeTheme = (key) => { applyTheme(key); setTheme(key); };
   const logout=()=>{ setProfileName(null); setLessonId(null); setScreen("profile"); setActiveTab("lessons"); };
 
   return (
@@ -1172,14 +1209,26 @@ export default function App() {
         *{box-sizing:border-box;margin:0;padding:0;}
         @keyframes dos-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
         .dos-cursor{animation:dos-blink 1s step-end infinite}
-        ::-webkit-scrollbar{width:8px;background:#000050}
-        ::-webkit-scrollbar-thumb{background:#334}
-        body{margin:0}
+        ::-webkit-scrollbar{width:8px;background:${C.dark}}
+        ::-webkit-scrollbar-thumb{background:${C.gray}}
+        body{margin:0;background:${C.bg}}
       `}</style>
-      <div style={{ background:C.bg, color:C.text, fontFamily:'"Courier New","Lucida Console",monospace', minHeight:"100vh", display:"flex", flexDirection:"column", fontSize:14, zoom:1.25 }}>
-        <div style={{ ...C.bar, padding:"3px 14px", fontWeight:"bold", fontSize:13, display:"flex", justifyContent:"space-between", flexShrink:0 }}>
+      <div style={{ background:C.bg, color:C.text, fontFamily:'"Courier New","Lucida Console",monospace', minHeight:"100vh", display:"flex", flexDirection:"column", fontSize:14, zoom:1.5 }}>
+        <div style={{ ...C.bar, padding:"3px 14px", fontWeight:"bold", fontSize:13, display:"flex", justifyContent:"space-between", alignItems:"center", flexShrink:0, gap:10 }}>
           <span>■ DATILOGRAFO TURBO v2.0</span>
-          <span>{profileName?`Aluno: ${profileName.toUpperCase()}`:""}</span>
+          <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <span style={{ fontWeight:"normal", fontSize:11 }}>TEMA:</span>
+            {Object.entries(THEMES).map(([k,t])=>(
+              <div key={k} onClick={()=>changeTheme(k)} title={t.label}
+                style={{
+                  width:16, height:16, cursor:"pointer", borderRadius:"50%",
+                  background:t.colors.bg,
+                  border:`2px solid ${theme===k?t.colors.yellow:t.colors.text}`,
+                  boxShadow:theme===k?`0 0 5px ${t.colors.yellow}`:"none",
+                }}/>
+            ))}
+            <span style={{ marginLeft:6 }}>{profileName?`Aluno: ${profileName.toUpperCase()}`:""}</span>
+          </div>
         </div>
         <div style={{ flex:1, padding:"12px 20px", overflowY:"auto" }}>
           <div style={{ maxWidth:920, margin:"0 auto" }}>
