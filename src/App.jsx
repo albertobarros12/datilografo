@@ -163,8 +163,9 @@ function KeyboardVisual({ highlightKey }) {
   const hk = (highlightKey || "").toLowerCase();
   const inMap = !!KF[hk];
   return (
-    <div style={{ margin:"8px 0 4px", userSelect:"none" }}>
+    <div style={{ margin:"8px 0 4px", userSelect:"none", textAlign:"center" }}>
       {!inMap && hk && <div style={{ color:C.yellow, fontSize:11, marginBottom:4 }}>⌨ Tecla especial: use o layout ABNT2 para digitar "{highlightKey}"</div>}
+      <div style={{ display:"inline-block", textAlign:"left" }}>
       {KB_ROWS.map((row, ri) => (
         <div key={ri} style={{ display:"flex", gap:2, marginBottom:2, paddingLeft:ri*8 }}>
           {row.map(k => {
@@ -183,6 +184,7 @@ function KeyboardVisual({ highlightKey }) {
           })}
         </div>
       ))}
+      </div>
       <div style={{ display:"flex", justifyContent:"center", marginTop:2 }}>
         <div style={{
           width:160, height:22, display:"flex", alignItems:"center", justifyContent:"center",
@@ -191,7 +193,7 @@ function KeyboardVisual({ highlightKey }) {
           color: hk===" " ? "#000" : "#888", fontSize:10,
         }}>ESPACO</div>
       </div>
-      <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:4, fontSize:9, color:C.gray }}>
+      <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginTop:4, fontSize:9, color:C.gray, justifyContent:"center" }}>
         {[["LP","Min.Esq"],["LR","Anel.Esq"],["LM","Med.Esq"],["LI","Ind.Esq"],["RI","Ind.Dir"],["RM","Med.Dir"],["RR","Anel.Dir"],["RP","Min.Dir"]].map(([f,l]) => (
           <span key={f} style={{ color:FC[f] }}>■ {l}</span>
         ))}
