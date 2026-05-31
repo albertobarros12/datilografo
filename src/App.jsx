@@ -75,10 +75,10 @@ const ACHIEVEMENTS = [
   { id:"all_accent",   icon:"á",  label:"Sem Sotaque",       desc:"Dominou todas as licoes de acentuacao" },
   { id:"all_numbers",  icon:"🔢", label:"Numeros e Simbolos",desc:"Completou lições de números (16-18)" },
   { id:"all_lessons",  icon:"🏆", label:"Mestre Digital",    desc:"Completou todas as 18 licoes!" },
-  { id:"wpm_20",       icon:"⚡", label:"Velocidade 20",     desc:"Atingiu 20 WPM" },
-  { id:"wpm_40",       icon:"🚀", label:"Velocidade 40",     desc:"Atingiu 40 WPM" },
-  { id:"wpm_60",       icon:"🌟", label:"Velocidade 60",     desc:"Atingiu 60 WPM!" },
-  { id:"wpm_80",       icon:"🏎️", label:"Velocidade 80",     desc:"Atingiu 80 WPM" },
+  { id:"wpm_20",       icon:"⚡", label:"Velocidade 20",     desc:"Atingiu 20 PPM" },
+  { id:"wpm_40",       icon:"🚀", label:"Velocidade 40",     desc:"Atingiu 40 PPM" },
+  { id:"wpm_60",       icon:"🌟", label:"Velocidade 60",     desc:"Atingiu 60 PPM!" },
+  { id:"wpm_80",       icon:"🏎️", label:"Velocidade 80",     desc:"Atingiu 80 PPM" },
   { id:"perfect",      icon:"✨", label:"Perfeicao!",        desc:"100% de precisao em um exercicio" },
   { id:"no_errors",    icon:"🎯", label:"Sem Erros!",        desc:"Completou uma lição inteira sem nenhum erro" },
   { id:"streak_3",     icon:"🔥", label:"Tres Dias!",        desc:"3 dias seguidos de pratica" },
@@ -453,7 +453,7 @@ function ProfileCard({ name, done, streak, ach, onClick, onRemove }) {
 // MAIN NAV
 // ═══════════════════════════════════════════════════════
 function MainNav({ active, setActive, onLogout, profileName }) {
-  const TABS = [["lessons","LICOES"],["cronometro","CRONOMETRO"],["chuva","CHUVA"],["stats","STATS"],["conquistas","CONQUISTAS"]];
+  const TABS = [["lessons","LICOES"],["cronometro","CRONOMETRO"],["chuva","CHUVA"],["stats","STATS"],["conquistas","CONQUISTAS"],["ajuda","AJUDA"]];
   return (
     <div style={{ display:"flex", justifyContent:"space-between", alignItems:"stretch", borderBottom:`1px solid ${C.text}`, marginBottom:12, flexWrap:"wrap" }}>
       <div style={{ display:"flex" }}>
@@ -541,7 +541,7 @@ function LessonCard({ lesson, status, data, onClick }) {
       </div>
       {data?.bestWPM>0 && (
         <div style={{ textAlign:"right", fontSize:11, flexShrink:0, marginLeft:8 }}>
-          <div style={{ color:C.cyan }}>{data.bestWPM} WPM</div>
+          <div style={{ color:C.cyan }}>{data.bestWPM} PPM</div>
           <div style={{ color:C.gray }}>{data.bestAccuracy}%</div>
         </div>
       )}
@@ -679,7 +679,7 @@ function ExerciseScreen({ profileName, lessonId, onBack }) {
         <div style={{ color:C.green, fontSize:18, letterSpacing:4, marginBottom:4 }}>LICAO CONCLUIDA!</div>
         <div style={{ color:C.gray, fontSize:11, marginBottom:18 }}>Progresso salvo ✓</div>
         <div style={{ display:"flex", gap:40, justifyContent:"center", marginBottom:20 }}>
-          <StatBlock label="WPM MEDIO" value={finalStats.avgWPM} unit="wpm"/>
+          <StatBlock label="PPM MEDIO" value={finalStats.avgWPM} unit="ppm"/>
           <StatBlock label="PRECISAO" value={`${finalStats.avgAcc}%`}/>
           <StatBlock label="EXERCICIOS" value={lesson.exercises.length} unit="ok"/>
         </div>
@@ -699,7 +699,7 @@ function ExerciseScreen({ profileName, lessonId, onBack }) {
         <div style={{ color:C.green, fontSize:16, letterSpacing:2, marginBottom:4 }}>EXERCICIO {exIdx+1} OK!</div>
         <div style={{ color:C.gray, fontSize:12, marginBottom:24 }}>{lesson.title}</div>
         <div style={{ display:"flex", gap:40, justifyContent:"center", marginBottom:24 }}>
-          <StatBlock label="WPM" value={lastResult.wpm}/>
+          <StatBlock label="PPM" value={lastResult.wpm}/>
           <StatBlock label="PRECISAO" value={`${lastResult.accuracy}%`}/>
           <StatBlock label="ERROS" value={lastResult.errors}/>
         </div>
@@ -717,7 +717,7 @@ function ExerciseScreen({ profileName, lessonId, onBack }) {
           <span style={{ color:C.gray, fontSize:12 }}> | Ex.{exIdx+1}/{lesson.exercises.length}</span>
         </div>
         <div style={{ display:"flex", gap:10, fontSize:13, alignItems:"center" }}>
-          <span>WPM:<span style={{ color:C.yellow }}> {wpm}</span></span>
+          <span>PPM:<span style={{ color:C.yellow }}> {wpm}</span></span>
           <span>Prec.:<span style={{ color:accuracy>=90?C.green:C.red }}> {accuracy}%</span></span>
           <span>Erros:<span style={{ color:errors>0?C.red:C.green }}> {errors}</span></span>
           {lessonId>=8 && (
@@ -828,7 +828,7 @@ function CronometroScreen({ profileName }) {
             Digite o maximo de palavras em <span style={{ color:C.yellow }}>60 segundos</span>.<br/>
             Confirme com ESPACO.
           </div>
-          {bestWPM>0&&<div style={{ color:C.cyan, fontSize:13, marginBottom:14 }}>Recorde: <span style={{ color:C.yellow }}>{bestWPM} WPM</span></div>}
+          {bestWPM>0&&<div style={{ color:C.cyan, fontSize:13, marginBottom:14 }}>Recorde: <span style={{ color:C.yellow }}>{bestWPM} PPM</span></div>}
           <Btn onClick={startGame}>[ INICIAR ]</Btn>
         </div>
       )}
@@ -857,9 +857,9 @@ function CronometroScreen({ profileName }) {
         <div style={{ textAlign:"center", paddingTop:16 }}>
           <div style={{ color:C.green, fontSize:18, letterSpacing:3, marginBottom:18 }}>TEMPO ESGOTADO!</div>
           <div style={{ display:"flex", gap:40, justifyContent:"center", marginBottom:20 }}>
-            <StatBlock label="VELOCIDADE" value={wpm} unit="WPM"/>
+            <StatBlock label="VELOCIDADE" value={wpm} unit="PPM"/>
             <StatBlock label="PALAVRAS OK" value={wordIdx-errors}/>
-            <StatBlock label="RECORDE" value={bestWPM} unit="WPM"/>
+            <StatBlock label="RECORDE" value={bestWPM} unit="PPM"/>
           </div>
           <AchievementBanner ids={newAch}/>
           <div style={{ display:"flex", gap:14, justifyContent:"center", marginTop:18 }}>
@@ -1066,7 +1066,7 @@ function StatsScreen({ profileName }) {
       <div style={{ display:"flex", gap:10, marginBottom:10, flexWrap:"wrap" }}>
         {[
           {title:"STREAK",    val:`🔥 ${profile.streak?.count||0}`, sub:"dias seguidos"},
-          {title:"RECORDE",   val:`${profile.cronometro?.bestWPM||0}`, sub:"WPM cronometro"},
+          {title:"RECORDE",   val:`${profile.cronometro?.bestWPM||0}`, sub:"PPM cronometro"},
           {title:"CHUVA",     val:`${profile.chuva?.bestScore||0}`, sub:"palavras record"},
         ].map(s=>(
           <Box key={s.title} title={s.title}>
@@ -1075,7 +1075,7 @@ function StatsScreen({ profileName }) {
           </Box>
         ))}
       </div>
-      {hist.length>1 && <Box title="EVOLUCAO WPM (ultimas sessoes)"><WPMChart data={hist}/></Box>}
+      {hist.length>1 && <Box title="EVOLUCAO PPM (ultimas sessoes)"><WPMChart data={hist}/></Box>}
       {Object.keys(keyErr).length>0 && <Box title="HEATMAP DE ERROS"><KeyHeatmap errors={keyErr}/></Box>}
       {hist.length===0&&Object.keys(keyErr).length===0&&(
         <div style={{ color:C.gray, textAlign:"center", padding:40 }}>Complete licoes para ver suas estatisticas!</div>
@@ -1111,7 +1111,7 @@ function WPMChart({ data }) {
           )}
         </g>
       ))}
-      <text x={W/2} y={12} fill={C.cyan} fontSize={10} textAnchor="middle">WPM por sessao</text>
+      <text x={W/2} y={12} fill={C.cyan} fontSize={10} textAnchor="middle">PPM por sessao</text>
     </svg>
   );
 }
@@ -1162,11 +1162,17 @@ function KeyHeatmap({ errors }) {
 function ConquistasScreen({ profileName }) {
   const [unlocked, setUnlocked] = useState([]);
   const [streak, setStreak] = useState(0);
+  const [lessonsDone, setLessonsDone] = useState(0);
   useEffect(()=>{
     const p=storageGet(`profile:${profileName.toLowerCase()}`);
     setUnlocked(p?.achievements||[]);
     setStreak(p?.streak?.count||0);
+    setLessonsDone(Object.values(p?.lessons||{}).filter(l=>l.status==="completed").length);
   },[profileName]);
+
+  const allLessons = lessonsDone>=LESSONS.length;
+  const allAch = unlocked.length>=ACHIEVEMENTS.length;
+  const certReady = allLessons && allAch;
 
   return (
     <div>
@@ -1174,6 +1180,27 @@ function ConquistasScreen({ profileName }) {
       <div style={{ color:C.gray, fontSize:12, marginBottom:14 }}>
         {unlocked.length}/{ACHIEVEMENTS.length} desbloqueadas &nbsp;|&nbsp; 🔥 Streak: {streak} dias
       </div>
+
+      <Box title="🎓 CERTIFICADO" borderColor={certReady?C.yellow:C.dark}>
+        {certReady ? (
+          <div style={{ textAlign:"center" }}>
+            <div style={{ color:C.green, fontSize:14, marginBottom:8 }}>
+              Parabens! Voce concluiu TODAS as licoes e conquistas!
+            </div>
+            <div style={{ color:C.gray, fontSize:11, marginBottom:12 }}>
+              Voce ganhou seu Certificado de Datilografia. Baixe e imprima para guardar!
+            </div>
+            <Btn onClick={()=>gerarCertificado(profileName)}>[ BAIXAR CERTIFICADO ]</Btn>
+          </div>
+        ) : (
+          <div style={{ color:C.gray, fontSize:12, lineHeight:1.8 }}>
+            Complete tudo para liberar seu certificado imprimivel:<br/>
+            <span style={{ color:allLessons?C.green:C.text }}>{allLessons?"✓":"○"} Todas as {LESSONS.length} licoes ({lessonsDone}/{LESSONS.length})</span><br/>
+            <span style={{ color:allAch?C.green:C.text }}>{allAch?"✓":"○"} Todas as {ACHIEVEMENTS.length} conquistas ({unlocked.length}/{ACHIEVEMENTS.length})</span>
+          </div>
+        )}
+      </Box>
+
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))", gap:5 }}>
         {ACHIEVEMENTS.map(a=>{
           const done=unlocked.includes(a.id);
@@ -1189,6 +1216,143 @@ function ConquistasScreen({ profileName }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════
+// CERTIFICADO (imprimivel, estilo classico)
+// ═══════════════════════════════════════════════════════
+function gerarCertificado(profileName) {
+  const nome = profileName.toUpperCase();
+  const hoje = new Date().toLocaleDateString("pt-BR", { day:"2-digit", month:"long", year:"numeric" });
+  const win = window.open("", "_blank", "width=1000,height=750");
+  if (!win) { alert("Permita pop-ups para baixar o certificado."); return; }
+  win.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<title>Certificado - ${nome}</title>
+<style>
+  @page { size: landscape; margin: 0; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: "Georgia","Times New Roman",serif; background:#f4ecd8; color:#3a2c12; }
+  .page { width:1000px; height:720px; margin:0 auto; padding:28px; }
+  .frame { width:100%; height:100%; border:6px double #8a6d3b; padding:8px; }
+  .inner { width:100%; height:100%; border:2px solid #b8945a; padding:40px 56px;
+           display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+           background:
+             radial-gradient(circle at 50% 0%, rgba(184,148,90,.10), transparent 60%),
+             #fbf6e9; }
+  .corner { letter-spacing:2px; color:#a8843c; font-size:18px; }
+  .topbar { width:100%; display:flex; justify-content:space-between; }
+  h1 { font-size:46px; letter-spacing:8px; color:#6b4f1d; text-transform:uppercase; }
+  .sub { font-size:15px; letter-spacing:5px; color:#9a7b3a; margin-top:6px; text-transform:uppercase; }
+  .deco { font-size:22px; color:#b8945a; margin:14px 0; letter-spacing:6px; }
+  .body { font-size:17px; line-height:1.9; text-align:center; max-width:760px; }
+  .nome { font-size:40px; color:#3a2c12; margin:10px 0 4px; font-style:italic;
+          border-bottom:2px solid #b8945a; padding:0 40px 8px; display:inline-block; }
+  .selo { width:96px; height:96px; border-radius:50%; border:3px double #a8843c; color:#8a6d3b;
+          display:flex; align-items:center; justify-content:center; font-size:40px; }
+  .foot { width:100%; display:flex; justify-content:space-between; align-items:flex-end; margin-top:8px; }
+  .sig { text-align:center; font-size:13px; color:#6b4f1d; }
+  .sig .line { width:220px; border-top:1.5px solid #6b4f1d; margin:0 auto 4px; }
+  .app { font-family:"Courier New",monospace; font-size:13px; color:#8a6d3b; letter-spacing:2px; }
+  .noprint { text-align:center; margin:16px; }
+  .noprint button { font-family:"Courier New",monospace; font-size:14px; padding:8px 22px;
+    background:#6b4f1d; color:#fbf6e9; border:none; cursor:pointer; letter-spacing:2px; }
+  @media print { .noprint { display:none; } body{ background:#fff; } }
+</style></head><body>
+  <div class="page"><div class="frame"><div class="inner">
+    <div class="topbar"><span class="corner">✦</span><span class="corner">✦</span></div>
+    <div style="text-align:center">
+      <h1>Certificado</h1>
+      <div class="sub">de Conclusao em Datilografia</div>
+    </div>
+    <div class="deco">─────────  ⌨  ─────────</div>
+    <div class="body">
+      Certificamos que
+      <div class="nome">${nome}</div>
+      concluiu com exito todas as <b>${LESSONS.length} licoes</b> do curso de datilografia
+      e desbloqueou todas as <b>${ACHIEVEMENTS.length} conquistas</b>, demonstrando
+      dominio do teclado, precisao e velocidade na arte de datilografar.
+    </div>
+    <div class="selo">🏆</div>
+    <div class="foot">
+      <div class="sig"><div class="line"></div>Data: ${hoje}</div>
+      <div class="app">DATILOGRAFO TURBO v2.0</div>
+      <div class="sig"><div class="line"></div>Instrutor Digital</div>
+    </div>
+    <div class="topbar"><span class="corner">✦</span><span class="corner">✦</span></div>
+  </div></div></div>
+  <div class="noprint"><button onclick="window.print()">IMPRIMIR / SALVAR PDF</button></div>
+</body></html>`);
+  win.document.close();
+}
+
+// ═══════════════════════════════════════════════════════
+// AJUDA
+// ═══════════════════════════════════════════════════════
+const NIVEIS = [
+  { faixa:"0–20 PPM",  nome:"INICIANTE",   cor:"red",    desc:"Aprendendo a posicao das teclas. Foque na PRECISAO, nao na velocidade. Olhe o teclado o minimo possivel." },
+  { faixa:"20–40 PPM", nome:"APRENDIZ",    cor:"yellow", desc:"Ja digita sem olhar a maioria das teclas. Comece a buscar ritmo constante." },
+  { faixa:"40–60 PPM", nome:"FLUENTE",     cor:"cyan",   desc:"Digitacao confortavel para o dia a dia. Boa velocidade para escrever textos." },
+  { faixa:"60–80 PPM", nome:"AVANCADO",    cor:"green",  desc:"Voce digita rapido e com poucos erros. Nivel profissional!" },
+  { faixa:"80+ PPM",   nome:"MESTRE",      cor:"yellow", desc:"Velocidade de campeao! Os dedos voam pelo teclado. 🏎️" },
+];
+
+function AjudaScreen() {
+  return (
+    <div>
+      <div style={{ color:C.cyan, fontSize:15, letterSpacing:2, marginBottom:12 }}>❓ AJUDA</div>
+
+      <Box title="O QUE E DATILOGRAFIA?">
+        <div style={{ fontSize:12, color:C.text, lineHeight:1.8 }}>
+          <b>Datilografia</b> e a arte de digitar usando todos os dedos, sem precisar olhar
+          o teclado — a chamada <b>digitacao por toque</b>. Cada dedo fica responsavel por
+          um grupo de teclas. Com a pratica, suas maos "memorizam" as posicoes e voce passa
+          a escrever olhando apenas para a tela. Isso deixa a digitacao muito mais rapida,
+          confortavel e com menos erros!
+        </div>
+      </Box>
+
+      <Box title="O QUE E PPM?">
+        <div style={{ fontSize:12, color:C.text, lineHeight:1.8 }}>
+          <b>PPM</b> significa <b>Palavras Por Minuto</b> — a medida de velocidade de
+          digitacao. Por convencao, conta-se 1 "palavra" a cada 5 caracteres digitados.
+          Quanto maior o PPM, mais rapido voce digita. Mas lembre-se:
+          <span style={{ color:C.yellow }}> precisao vem antes da velocidade!</span> De
+          nada adianta ser rapido errando muito.
+        </div>
+      </Box>
+
+      <Box title="NIVEIS DE APRENDIZADO">
+        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          {NIVEIS.map(n=>(
+            <div key={n.nome} style={{ display:"flex", gap:12, alignItems:"flex-start", borderLeft:`3px solid ${C[n.cor]}`, paddingLeft:10 }}>
+              <div style={{ minWidth:96 }}>
+                <div style={{ color:C[n.cor], fontSize:13, fontWeight:"bold" }}>{n.nome}</div>
+                <div style={{ color:C.gray, fontSize:10 }}>{n.faixa}</div>
+              </div>
+              <div style={{ color:C.text, fontSize:11, lineHeight:1.6 }}>{n.desc}</div>
+            </div>
+          ))}
+        </div>
+      </Box>
+
+      <Box title="COMO USAR O APP">
+        <div style={{ fontSize:12, color:C.text, lineHeight:1.8 }}>
+          • <b>LICOES</b> — siga em ordem, das teclas basicas ate frases com acentos e numeros.<br/>
+          • <b>CRONOMETRO</b> — digite o maximo de palavras em 60 segundos.<br/>
+          • <b>CHUVA</b> — digite as palavras antes que cheguem ao chao (escolha a dificuldade!).<br/>
+          • <b>STATS</b> — veja sua evolucao de PPM e em quais teclas voce mais erra.<br/>
+          • <b>CONQUISTAS</b> — desbloqueie medalhas e ganhe seu certificado ao completar tudo!
+        </div>
+      </Box>
+
+      <Box title="DICA DE OURO" borderColor={C.yellow}>
+        <div style={{ fontSize:12, color:C.yellow, lineHeight:1.8, textAlign:"center" }}>
+          Mantenha os indicadores nas teclas <b>F</b> e <b>J</b> (elas tem um relevo!).<br/>
+          Essa e a "posicao base" de onde todos os dedos partem. 🖐️
+        </div>
+      </Box>
     </div>
   );
 }
@@ -1249,6 +1413,7 @@ export default function App() {
               {activeTab==="chuva"&&<ChuvaScreen profileName={profileName}/>}
               {activeTab==="stats"&&<StatsScreen profileName={profileName}/>}
               {activeTab==="conquistas"&&<ConquistasScreen profileName={profileName}/>}
+              {activeTab==="ajuda"&&<AjudaScreen/>}
             </div>
           )}
           </div>
