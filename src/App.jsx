@@ -582,11 +582,11 @@ function ExerciseScreen({ profileName, lessonId, onBack }) {
       </div>
 
       <Box title="INSTRUCAO">
-        <div style={{ fontSize:12, color:C.text, whiteSpace:"pre-line", lineHeight:1.7 }}>{lesson.description}</div>
+        <div style={{ fontSize:12, color:C.text, whiteSpace:"pre-line", lineHeight:1.7, textAlign:"center" }}>{lesson.description}</div>
       </Box>
 
       <Box title="TEXTO — COMECE A DIGITAR" borderColor={C.cyan}>
-        <div style={{ fontSize:26, letterSpacing:6, padding:"10px 0 8px", lineHeight:1.7 }}>{renderText()}</div>
+        <div style={{ fontSize:26, letterSpacing:6, padding:"10px 0 8px", lineHeight:1.7, textAlign:"center" }}>{renderText()}</div>
         {semOlhar&&startRef.current&&!textHidden && <div style={{ color:C.yellow, fontSize:11 }}>⚠ Texto vai sumir em 3s...</div>}
         <div style={{ height:3, background:"#223", marginTop:6 }}>
           <div style={{ height:"100%", background:C.green, width:`${progress*100}%`, transition:"width 0.08s" }}/>
